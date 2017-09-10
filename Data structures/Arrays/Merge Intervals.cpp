@@ -1,4 +1,5 @@
 /**
+
 Given a collection of intervals, merge all overlapping intervals.
 
 For example,
@@ -30,28 +31,16 @@ public:
     vector<Interval> merge(vector<Interval>& intervals) {
         if(intervals.size()==0)
             return intervals;
-        sort(intervals.begin(), intervals.end(), sort_interval());        
-        for(int i=0;i<intervals.size()-1;){
-            int end = i+1;
-            if(intervals[i].end >= intervals[end].start){
-                while(end<intervals.size() && intervals[i].end >= intervals[end].end){
-                    end++;
-                }
-                if(end==intervals.size()){
-                    for(int j=end-1;j>=i+1;j--)
-                        intervals.erase(intervals.begin()+j);
-                }else if(intervals[i].end >= intervals[end].start){
-                    intervals[i].end = intervals[end].end;
-                    for(int j=end;j>i;j--)
-                        intervals.erase(intervals.begin()+j);
-                }else{
-                    for(int j=end-1;j>i;j--)
-                        intervals.erase(intervals.begin()+j);
-                }
-            }else{
-                i++;
+        sort(intervals.begin(), intervals.end(), [](Interval a, Interval b){return a.start < b.start;});  
+        vector<Interval> res;
+        res.push_back(intervals[0]);
+        for(int i=1;i<intervals.size();i++){
+            if(intervals[i].start > res.back().end)
+                res.push_back(intervals[i]);
+            else{
+                res.back().end = max(res.back().end , intervals[i].end);
             }
         }
-        return intervals;
+        return res;
     }
 };
